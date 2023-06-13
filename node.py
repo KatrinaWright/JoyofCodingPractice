@@ -11,9 +11,15 @@ class Node(object):
 
     def set_next(self, new_next):
         self.next_node = new_next
+    
+    def print_linked(self):
+        
 
 def main():
-	new_node = Node("first node data")
-	next_node = Node("second node data", new_node)
-	print(next_node.get_data())
+    new_node = Node("first node data")
+    next_node = Node("second node data", new_node)
+    print(next_node.get_data())
+    # list = ["uno", "dos", "tres", "quad"]
+    # print(list)
+    Node.set_next("first node data", "abaracadanara")
 main()
