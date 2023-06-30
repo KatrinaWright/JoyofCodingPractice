@@ -12,7 +12,7 @@ class Node(object):
     def set_next(self, new_next):
         self.next_node = new_next
     
-    def print_linked(self):
+    #def print_linked(self):
         
 
 def main():
@@ -22,4 +22,5 @@ def main():
     # list = ["uno", "dos", "tres", "quad"]
     # print(list)
     Node.set_next("first node data", "abaracadanara")
+
 main()
