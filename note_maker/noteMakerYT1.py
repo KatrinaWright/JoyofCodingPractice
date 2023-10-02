@@ -16,9 +16,19 @@ import json
 #options = Options()
 #options.add_argument('--headless=new')
 
+# global driver? 
+driver = webdriver.Chrome(
+    service=ChromeService(ChromeDriverManager().install())#, 
+    #options=options
+    )
+
+# The URL of the target page            ## TODO: Scrape URLS to process, store in array
+urlArray = ['https://youtu.be/76RHck_RCB8?feature=shared', 'https://youtu.be/GI-EEc3qysY?feature=shared']
+
+
+
 def consent_cookies_clicker():
     try: 
-
         # wait up to 15 seconds for the consent dialog to show up
         consent_overlay = WebDriverWait(driver, 15).until(
             EC.presence_of_element_located((By.ID, 'dialog'))
@@ -32,17 +42,6 @@ def consent_cookies_clicker():
             accept_all_button.click()
     except TimeoutException:
         print('Cookie modal missing')
-
-driver = webdriver.Chrome(
-    service=ChromeService(ChromeDriverManager().install())#, 
-    #options=options
-    )
-
-##########################################
-#scraping logic below ....
-
-# The URL of the target page
-url1 = 'https://youtu.be/76RHck_RCB8?feature=shared'
 
 
 def scrape_YTVideo(url, cookies=False):
@@ -68,14 +67,16 @@ def scrape_YTVideo(url, cookies=False):
 
     print('Heres the dictionary: ', video)
 
-    with open('video.json', 'w') as file:
+    with open('video.json', 'a') as file:
         json.dump(video, file, indent=4)
 
 
-    # close the browser and free up the resources
-    driver.quit()
+
 
 def main():
-    scrape_YTVideo(url1)
+    for url in urlArray:
+        scrape_YTVideo(url)
+    # close the browser and free up the resources
+    driver.quit()
 
 main()
