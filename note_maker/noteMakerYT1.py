@@ -43,6 +43,21 @@ def consent_cookies_clicker():
     except TimeoutException:
         print('Cookie modal missing')
 
+def visit_YTVideo(url, cookies=False):
+    #visit the target page in the controlled browser
+    driver.get(url)
+
+    if cookies == True:
+        consent_cookies_clicker()                           # Use only if cookies modal needs to be accepted
+
+    #Wait for YouTube to load the page data
+    WebDriverWait(driver, 15).until(
+        EC.visibility_of_all_elements_located((By.CSS_SELECTOR, 'h1.ytd-watch-metadata'))
+    )
+    print("I see it! I'm here:   ", url)
+    return
+
+
 
 def scrape_YTVideo(url, cookies=False):
     #visit the target page in the controlled browser
@@ -70,10 +85,28 @@ def scrape_YTVideo(url, cookies=False):
     with open('video.json', 'a') as file:
         json.dump(video, file, indent=4)
 
+def scrape_channel(url):
+    visit_YTVideo(url)
+    # dictionary where to store the channel info
+    channel = {}
 
+    # scrape the channel info attributes
+    channel_element  = driver.find_element(By.Id, 'owner')
+    channel_url      = channel_element.find_element(By.CSS_SELECTOR, 'a.yt-simple-endpoint').get_attribute('href')
+    channel_name     = channel_element.find_element(By.ID, 'channel-name').text
+    channel_image    = channel_element.find_element(By.ID, 'img').get_attribute('src')
+    channel_subs     = channel_element.find_element(By.ID, 'owner-sub-count').text.replace(' subscribers', '')
+
+    # assign scraped data to dictionary
+    channel['url']   = channel_url
+    channel['name']  = channel_name
+    channel['image'] = channel_image
+    channel['subs']  = channel_subs
+    return channel
 
 
 def main():
+    visit_YTVideo(urlArray[0])
     for url in urlArray:
         scrape_YTVideo(url)
     # close the browser and free up the resources
