@@ -24,7 +24,7 @@ driver = webdriver.Chrome(
 
 # The URL of the target page            ## TODO: Scrape URLS to process, store in array
 urlArray = ['https://youtu.be/76RHck_RCB8?feature=shared', 'https://youtu.be/GI-EEc3qysY?feature=shared']
-
+channel_url = 'https://joyofcoding.academy/replays'
 
 
 def consent_cookies_clicker():
@@ -74,16 +74,23 @@ def scrape_YTVideo(url, cookies=False):
 
     video = {}
 
+    driver.find_element(By.ID, 'description-inline-expander').click()
+#    driver.find_element(By.ID, 'ytd-video-description-transcript-section-renderer').click()
+
+
     title = driver.find_element(By.CSS_SELECTOR, 'h1.ytd-watch-metadata').text
+
     print("Heres the title:      ", title)
 
     video['url'] = url
     video['title'] = title
 
     print('Heres the dictionary: ', video)
+    return video
 
-    with open('video.json', 'a') as file:
-        json.dump(video, file, indent=4)
+
+    # with open('video.json', 'w') as file:
+    #     json.dump(video, file, indent=4)
 
 def scrape_channel(url):
     visit_YTVideo(url)
@@ -91,7 +98,7 @@ def scrape_channel(url):
     channel = {}
 
     # scrape the channel info attributes
-    channel_element  = driver.find_element(By.Id, 'owner')
+    channel_element  = driver.find_element(By.ID, 'owner')
     channel_url      = channel_element.find_element(By.CSS_SELECTOR, 'a.yt-simple-endpoint').get_attribute('href')
     channel_name     = channel_element.find_element(By.ID, 'channel-name').text
     channel_image    = channel_element.find_element(By.ID, 'img').get_attribute('src')
@@ -106,9 +113,15 @@ def scrape_channel(url):
 
 
 def main():
-    visit_YTVideo(urlArray[0])
+    #visit_YTVideo(urlArray[0])
+    video = {}
+    channel = {}
+    channel = scrape_channel(urlArray[0])
     for url in urlArray:
-        scrape_YTVideo(url)
+        video[url] = scrape_YTVideo(url)
+        channel[url] = video
+    with open('channel.json', 'w') as file:
+        json.dump(channel, file, indent=4)
     # close the browser and free up the resources
     driver.quit()
 
